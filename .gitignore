@@ -1,0 +1,6 @@
+mysql-data/
+php-server.log
+php-server.err.log
+desktop.ini
+.DS_Store
+Thumbs.db
