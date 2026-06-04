@@ -452,7 +452,7 @@ if ($selectedService && $selectedServicePage) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Silinex Global Services | IT Staffing & Managed Services</title>
-    <link rel="stylesheet" href="/style.css?v=20260525-clean-urls">
+    <link rel="stylesheet" href="/style.css?v=20260604-nexora-float">
 </head>
 <body>
    <script>
@@ -993,6 +993,12 @@ if ($selectedService && $selectedServicePage) {
             <path d="M16.03 3.5A12.36 12.36 0 0 0 5.5 22.36L4 28.5l6.3-1.47A12.35 12.35 0 1 0 16.03 3.5Zm0 22.63a10.14 10.14 0 0 1-5.17-1.42l-.37-.22-3.74.87.9-3.62-.24-.38a10.12 10.12 0 1 1 8.62 4.77Zm5.57-7.58c-.3-.15-1.8-.89-2.08-.99-.28-.1-.48-.15-.68.15-.2.3-.78.99-.96 1.19-.18.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.49-.9-.8-1.5-1.78-1.67-2.08-.18-.3-.02-.47.13-.62.14-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.68-1.65-.93-2.25-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.52.07-.8.37-.28.3-1.05 1.02-1.05 2.5 0 1.47 1.08 2.9 1.23 3.1.15.2 2.12 3.24 5.14 4.54.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.8-.73 2.05-1.44.25-.7.25-1.31.18-1.44-.08-.13-.28-.2-.58-.35Z"/>
         </svg>
     </a>
+    <button class="nexora-float" type="button" data-nexora-open aria-label="Open Silinex assistant">
+        <span class="nexora-float-ring" aria-hidden="true"></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4.25c-4.28 0-7.75 3.08-7.75 6.88 0 2.2 1.16 4.15 2.98 5.41l-.56 2.72 3.12-1.56c.7.2 1.44.31 2.21.31 4.28 0 7.75-3.08 7.75-6.88S16.28 4.25 12 4.25Zm0 1.7c3.34 0 6.05 2.32 6.05 5.18S15.34 16.31 12 16.31c-.72 0-1.41-.11-2.04-.34l-.34-.12-1.03.51.18-.9-.5-.33c-1.45-.96-2.32-2.45-2.32-4 0-2.86 2.71-5.18 6.05-5.18Z"/>
+        </svg>
+    </button>
     <script>
         const servicesModal = document.querySelector('[data-services-modal]');
         const openServicesButton = document.querySelector('[data-open-services]');
@@ -1022,9 +1028,42 @@ if ($selectedService && $selectedServicePage) {
             }
         });
 
-        document.querySelector('[data-back-to-top]').addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        const backToTopButton = document.querySelector('[data-back-to-top]');
+        if (backToTopButton) {
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        const nexoraButton = document.querySelector('[data-nexora-open]');
+        if (nexoraButton) {
+            nexoraButton.addEventListener('click', () => {
+                const voiceAgent = window.VoiceAgent;
+
+                if (voiceAgent && typeof voiceAgent.open === 'function') {
+                    voiceAgent.open();
+                    return;
+                }
+
+                if (voiceAgent && typeof voiceAgent.toggle === 'function') {
+                    voiceAgent.toggle();
+                    return;
+                }
+
+                if (voiceAgent && Array.isArray(voiceAgent.q)) {
+                    voiceAgent.q.push(() => {
+                        if (typeof window.VoiceAgent.open === 'function') {
+                            window.VoiceAgent.open();
+                        } else if (typeof window.VoiceAgent.toggle === 'function') {
+                            window.VoiceAgent.toggle();
+                        }
+                    });
+                }
+
+                nexoraButton.classList.add('is-loading');
+                window.setTimeout(() => nexoraButton.classList.remove('is-loading'), 1200);
+            });
+        }
 
         const industryTabs = document.querySelectorAll('[data-industry-tab]');
         const industryPanels = document.querySelectorAll('[data-industry-panel]');
